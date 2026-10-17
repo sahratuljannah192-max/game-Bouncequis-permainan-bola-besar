@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#172554">
+<title>BounceQuiz AI — PJOK Kelas V</title>
+<style>
+:root{--navy:#172554;--blue:#2563eb;--sky:#e0f2fe;--ink:#172033;--muted:#64748b;--green:#15803d;--red:#b91c1c;--gold:#f59e0b;--card:#fff;--line:#dbe4f0}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(145deg,#eff6ff,#f0fdf4 65%,#fef3c7);color:var(--ink);min-height:100vh}
+header{background:var(--navy);color:#fff;padding:22px clamp(16px,4vw,44px);box-shadow:0 8px 24px #17255422}
+.head{max-width:1200px;margin:auto;display:flex;align-items:center;gap:16px}.logo{font-size:2.5rem;background:#ffffff18;border-radius:18px;padding:10px}.head h1{margin:0;font-size:clamp(1.5rem,3vw,2.25rem);letter-spacing:-.04em}.head p{margin:5px 0 0;color:#cbd5e1}.tag{margin-left:auto;border:1px solid #ffffff55;padding:8px 12px;border-radius:999px;font-size:.85rem;white-space:nowrap}
+main{max-width:1200px;margin:24px auto;padding:0 16px 36px}.meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.meta-card,.stat,.panel,.results{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 6px 20px #1725540b}.meta-card{padding:14px 16px}.meta-card small{display:block;color:var(--muted);font-size:.78rem;margin-bottom:5px}.meta-card strong{font-size:1rem}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}.stat{padding:16px}.stat span{display:block;color:var(--muted);font-size:.85rem}.stat strong{display:block;font-size:1.5rem;margin-top:4px}.progress-track{height:9px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin-top:12px}.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#2563eb,#22c55e);transition:width .25s}
+.layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(270px,.8fr);gap:16px}.panel{padding:18px}.panel h2{font-size:1.15rem;margin:0 0 5px}.sub{color:var(--muted);font-size:.9rem;margin:0 0 14px}.arena-wrap{position:relative}.arena{height:480px;position:relative;overflow:hidden;border-radius:16px;background:radial-gradient(circle at 20% 20%,#ffffff90,transparent 28%),linear-gradient(135deg,#dbeafe,#dcfce7);border:2px solid #bfdbfe;isolation:isolate}
+.arena:before{content:"";position:absolute;inset:12px;border:2px dashed #ffffffa8;border-radius:12px;pointer-events:none}.ball{position:absolute;width:54px;height:54px;border:0;border-radius:50%;display:grid;place-items:center;font-weight:850;font-size:1rem;color:#fff;cursor:pointer;box-shadow:0 5px 10px #0f172a30, inset 0 2px 5px #ffffff55;transition:transform .15s,filter .15s;z-index:2;touch-action:manipulation}.ball:hover,.ball:focus-visible{transform:scale(1.13);filter:brightness(1.08);outline:3px solid #fff;outline-offset:2px}.ball.done{background:#15803d!important;cursor:not-allowed;filter:saturate(.8)}.ball.done:after{content:"✓";position:absolute;right:-2px;top:-5px;background:#fff;color:#15803d;width:18px;height:18px;border-radius:50%;font-size:12px;display:grid;place-items:center;border:1px solid #15803d}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin-top:12px}.legend span{display:flex;align-items:center;gap:6px}.dot{width:11px;height:11px;border-radius:50%;display:inline-block}.dot.blue{background:#2563eb}.dot.green{background:#15803d}.tip{padding:12px;background:#eff6ff;border-radius:12px;color:#1e40af;font-size:.88rem;margin-top:14px}
+.side-info{display:grid;gap:12px}.mini-card{padding:14px;border:1px solid var(--line);border-radius:14px;background:#f8fafc}.mini-card h3{font-size:.95rem;margin:0 0 7px}.mini-card p,.mini-card li{font-size:.87rem;color:#475569;line-height:1.5}.mini-card ul{padding-left:20px;margin:5px 0}
+button{font:inherit}.btn{border:0;border-radius:11px;padding:11px 15px;font-weight:750;cursor:pointer;transition:filter .15s,transform .15s}.btn:hover{filter:brightness(.96)}.btn:active{transform:translateY(1px)}.primary{background:var(--blue);color:white}.secondary{background:#e2e8f0;color:#0f172a}.success{background:#15803d;color:#fff}.danger{background:#fee2e2;color:#991b1b}.btn:disabled{opacity:.5;cursor:not-allowed}.button-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.hidden{display:none!important}
+.overlay{position:fixed;inset:0;background:#0f172acc;display:flex;align-items:center;justify-content:center;padding:16px;z-index:20;overflow:auto}.modal{background:#fff;width:min(680px,100%);max-height:min(92vh,900px);overflow:auto;border-radius:22px;padding:clamp(18px,4vw,28px);box-shadow:0 25px 80px #0004}.modal-head{display:flex;gap:12px;align-items:flex-start;justify-content:space-between}.modal h2{margin:0;font-size:1.35rem}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-weight:800;font-size:.75rem;margin-bottom:10px}.question{font-size:1.13rem;line-height:1.55;margin:18px 0}.options{display:grid;gap:9px}.option{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1.5px solid #cbd5e1;border-radius:12px;cursor:pointer}.option:has(input:checked){border-color:#2563eb;background:#eff6ff}.option input{margin-top:4px;accent-color:#2563eb}.option b{min-width:24px}.feedback{border-radius:13px;padding:14px;margin-top:15px;line-height:1.5}.feedback.good{background:#dcfce7;color:#14532d}.feedback.partial{background:#fef3c7;color:#78350f}.feedback.bad{background:#fee2e2;color:#7f1d1d}.teacher-box{background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:14px}.teacher-box h3{font-size:.95rem;margin:0 0 8px}.teacher-box p,.teacher-box li{font-size:.9rem;line-height:1.5}.teacher-box ul{padding-left:20px}.teacher-note{width:100%;min-height:75px;border:1px solid #cbd5e1;border-radius:10px;padding:10px;font:inherit;resize:vertical}.score-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.score-buttons .btn{padding:10px 4px}.results{padding:clamp(20px,4vw,36px);text-align:center}.trophy{font-size:3rem}.results h2{font-size:clamp(1.7rem,4vw,2.5rem);margin:8px 0}.result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:22px 0}.result-stat{background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:15px 8px}.result-stat span{display:block;color:var(--muted);font-size:.8rem}.result-stat strong{display:block;font-size:1.35rem;margin-top:5px}.small{font-size:.82rem;color:var(--muted)}footer{text-align:center;color:#64748b;font-size:.8rem;padding:18px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.meta{grid-template-columns:repeat(2,minmax(0,1fr))}.arena{height:440px}.tag{display:none}}
+@media(max-width:500px){.head{align-items:flex-start}.logo{font-size:1.8rem;padding:8px}.meta{gap:8px}.meta-card{padding:11px}.stats{gap:8px}.stat{padding:12px}.stat strong{font-size:1.2rem}.arena{height:460px}.ball{width:44px;height:44px;font-size:.85rem}.result-grid{grid-template-columns:repeat(2,1fr)}.score-buttons{grid-template-columns:1fr}.modal{border-radius:16px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <div class="logo" aria-hidden="true">🏀</div>
+    <div><h1>BounceQuiz AI</h1><p>Belajar aktif, bergerak, dan berani menjawab!</p></div>
+    <div class="tag">🎯 Asesmen Formatif</div>
+  </div>
+</header>
+<main>
+  <section class="meta" aria-label="Informasi pembelajaran">
+    <div class="meta-card"><small>Mata Pelajaran</small><strong>PJOK</strong></div>
+    <div class="meta-card"><small>Materi</small><strong>Permainan Bola Besar</strong></div>
+    <div class="meta-card"><small>Kelas</small><strong>V SD</strong></div>
+    <div class="meta-card"><small>Jumlah Peserta</small><strong>18 siswa</strong></div>
+  </section>
+  <section class="stats" aria-label="Kemajuan permainan">
+    <div class="stat"><span>Terjawab</span><strong id="progressText">0 / 18</strong><div class="progress-track" aria-label="Progress"><div class="progress-fill" id="progressFill"></div></div></div>
+    <div class="stat"><span>Skor Benar</span><strong id="correctText">0</strong><span class="small">Soal dengan nilai 100</span></div>
+    <div class="stat"><span>Total Poin</span><strong><span id="pointsText">0</span> <span class="small">/ 1800</span></strong><span class="small">Termasuk nilai parsial</span></div>
+  </section>
+
+  <div id="gameView" class="layout">
+    <section class="panel">
+      <h2>🏟️ Arena Bola</h2><p class="sub">Pilih bola bernomor untuk membuka satu soal. Bola hijau berarti soal sudah selesai.</p>
+      <div class="arena-wrap"><div class="arena" id="arena" aria-label="Arena dengan 18 bola bernomor"></div></div>
+      <div class="legend"><span><i class="dot blue"></i> Belum dijawab</span><span><i class="dot green"></i> Sudah selesai ✓</span></div>
+      <div class="tip">💡 <b>Petunjuk:</b> Pilih satu bola, baca soal dengan teliti, lalu jawab. Untuk soal jawaban lisan, guru membantu memberikan nilai berdasarkan rubrik.</div>
+    </section>
+    <aside class="panel">
+      <h2>📘 Panduan Bermain</h2><p class="sub">Ikuti langkah sederhana berikut.</p>
+      <div class="side-info">
+        <div class="mini-card"><h3>1. Pilih bola</h3><p>Klik atau ketuk bola yang bergerak di arena. Nomor bola sesuai dengan nomor soal.</p></div>
+        <div class="mini-card"><h3>2. Jawab pertanyaan</h3><p>Soal pilihan ganda memiliki empat opsi. Soal jawaban lisan dijawab siswa dan dinilai guru.</p></div>
+        <div class="mini-card"><h3>3. Lihat feedback</h3><p>Setiap soal memberi umpan balik, pembahasan, dan skor setelah dinilai.</p></div>
+        <div class="mini-card"><h3>Rubrik guru</h3><ul><li><b>100 poin:</b> benar / sangat tepat</li><li><b>50 poin:</b> sebagian benar / cukup tepat</li><li><b>0 poin:</b> salah / belum tepat</li></ul></div>
+      </div>
+      <div class="button-row"><button class="btn secondary" id="restartTop">↻ Mulai ulang sesi</button></div>
+      <p class="small">Sesi ini berjalan di browser. Hasil tidak dikirim ke server.</p>
+    </aside>
+  </div>
+
+  <section id="resultsView" class="results hidden">
+    <div class="trophy">🏆</div><h2>BounceQuiz Selesai!</h2><p>Hebat sudah menyelesaikan semua soal permainan bola besar.</p>
+    <div class="result-grid">
+      <div class="result-stat"><span>Jumlah soal</span><strong id="resTotal">18</strong></div>
+      <div class="result-stat"><span>Jawaban benar</span><strong id="resCorrect">0</strong></div>
+      <div class="result-stat"><span>Jawaban salah</span><strong id="resWrong">0</strong></div>
+      <div class="result-stat"><span>Sebagian benar</span><strong id="resPartial">0</strong></div>
+    </div>
+    <div class="result-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+      <div class="result-stat"><span>Nilai akhir</span><strong id="resPoints">0 / 1800</strong></div>
+      <div class="result-stat"><span>Persentase</span><strong id="resPercent">0%</strong></div>
+    </div>
+    <p id="resultMessage"></p>
+    <div class="button-row" style="justify-content:center"><button class="btn primary" id="playAgain">↻ Main Lagi</button><button class="btn secondary" id="downloadResults">⬇ Unduh hasil CSV</button></div>
+  </section>
+</main>
+<footer>BounceQuiz AI · PJOK Kelas V SD · Asesmen Formatif</footer>
+
+<div class="overlay hidden" id="questionOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-head"><div><span class="pill" id="typePill">MULTIPLE CHOICE</span><h2 id="modalTitle">Bola 1 · Soal 1</h2></div><button class="btn secondary" id="closeModal" aria-label="Tutup soal">✕</button></div>
+    <p class="question" id="questionText"></p>
+    <form id="mcForm" class="hidden"><div class="options" id="options"></div><div class="button-row"><button class="btn primary" type="submit" id="submitMC">Kirim Jawaban</button></div></form>
+    <div id="oralPanel" class="hidden">
+      <p><b>Instruksi:</b> Minta siswa menjawab secara lisan. Guru dapat mencatat inti jawabannya.</p>
+      <label for="teacherNote"><b>Catatan jawaban siswa (opsional)</b></label><textarea id="teacherNote" class="teacher-note" placeholder="Catat kata kunci jawaban siswa..."></textarea>
+      <div class="button-row"><button class="btn primary" id="beginMarking">Nilai Jawaban</button></div>
+      <div id="markingPanel" class="teacher-box hidden">
+        <h3>Panel penilaian guru</h3><p><b>Indikator jawaban:</b></p><ul id="indicators"></ul>
+        <p><b>Contoh jawaban ideal:</b> <span id="expectedAnswer"></span></p>
+        <p><b>Rubrik:</b> 100 = sangat tepat · 50 = sebagian benar · 0 = belum tepat.</p>
+        <div class="score-buttons"><button class="btn success" data-score="100">100 · Sangat tepat</button><button class="btn" style="background:#fef3c7;color:#78350f" data-score="50">50 · Sebagian</button><button class="btn danger" data-score="0">0 · Belum tepat</button></div>
+      </div>
+    </div>
+    <div id="feedback" class="feedback hidden" aria-live="polite"></div>
+    <div class="teacher-box hidden" id="teacherReview"><h3>Indikator jawaban</h3><ul id="reviewIndicators"></ul><p><b>Rubrik guru:</b> Benar/sangat tepat = 100; sebagian benar/cukup tepat = 50; salah/belum tepat = 0.</p></div>
+    <div class="button-row"><button class="btn secondary" id="backToArena">Kembali ke arena</button><button class="btn primary hidden" id="finishQuestion">Selesai</button></div>
+  </div>
+</div>
+<script>
+"use strict";
+const QUESTIONS = [
+{id:1,ballNumber:1,type:"mc",topic:"Sepak bola",learningIndicator:"Mengidentifikasi tujuan permainan sepak bola",question:"Apa tujuan utama permainan sepak bola?",options:["Memasukkan bola ke gawang lawan sebanyak mungkin","Melempar bola ke keranjang","Memukul bola melewati net","Menjatuhkan semua pemain lawan"],correctAnswer:0,explanation:"Tujuan permainan sepak bola adalah mencetak gol dengan memasukkan bola ke gawang lawan sesuai aturan.",answerIndicators:["Menyebutkan tujuan mencetak gol ke gawang lawan"],teacherRubric:"100 jika tujuan disebut tepat; 50 jika menyebut mencetak angka tetapi kurang jelas; 0 jika tidak sesuai."},
+{id:2,ballNumber:2,type:"mc",topic:"Bola basket",learningIndicator:"Mengenali teknik menggiring bola basket",question:"Saat membawa bola basket sambil bergerak, teknik dasar yang digunakan adalah ...",options:["Servis","Dribbling atau menggiring bola","Sundulan","Smash"],correctAnswer:1,explanation:"Dribbling adalah memantulkan bola ke lantai dengan satu tangan secara berulang sambil bergerak.",answerIndicators:["Mengenali dribbling sebagai teknik menggiring bola"],teacherRubric:"100 jika menyebut dribbling/menggiring; 50 jika memahami bola dipantulkan tetapi istilah kurang tepat; 0 jika salah."},
+{id:3,ballNumber:3,type:"oral",topic:"Bola voli",learningIndicator:"Menjelaskan fungsi passing bawah",question:"Jelaskan kapan pemain bola voli dapat menggunakan passing bawah dan apa tujuannya.",expectedAnswer:"Passing bawah dapat digunakan untuk menerima servis atau bola rendah, lalu mengarahkan bola kepada teman agar permainan berlanjut.",answerIndicators:["Menyebut menerima bola rendah atau servis","Menjelaskan bola diarahkan kepada teman/agar permainan berlanjut"],explanation:"Passing bawah membantu pemain mengendalikan bola yang datang rendah dan mengarahkannya kepada rekan satu tim."},
+{id:4,ballNumber:4,type:"mc",topic:"Sportivitas",learningIndicator:"Menentukan sikap sportif",question:"Jika timmu kalah dalam pertandingan, sikap yang paling sportif adalah ...",options:["Menyalahkan wasit","Mengejek tim pemenang","Menerima hasil, memberi selamat, dan berlatih lagi","Meninggalkan lapangan sambil marah"],correctAnswer:2,explanation:"Sportivitas berarti menghormati lawan, teman, dan keputusan pertandingan, baik saat menang maupun kalah.",answerIndicators:["Menunjukkan penerimaan hasil dan menghormati lawan"],teacherRubric:"100 jika memilih sikap sportif secara lengkap; 50 jika hanya menyebut menerima hasil; 0 jika memilih tindakan tidak sportif."},
+{id:5,ballNumber:5,type:"mc",topic:"Sepak bola",learningIndicator:"Mengenali bagian kaki untuk mengoper bola",question:"Bagian kaki yang sering digunakan untuk melakukan operan pendek yang terarah dalam sepak bola adalah ...",options:["Tumit saja","Telapak kaki bagian belakang saja","Lutut","Kaki bagian dalam"],correctAnswer:3,explanation:"Kaki bagian dalam memberi bidang sentuh yang cukup lebar sehingga membantu operan pendek menjadi lebih terarah.",answerIndicators:["Menyebut kaki bagian dalam untuk operan pendek"],teacherRubric:"100 jika benar; 50 jika menyebut sisi kaki tanpa jelas; 0 jika salah."},
+{id:6,ballNumber:6,type:"oral",topic:"Kerja sama tim",learningIndicator:"Menjelaskan pentingnya kerja sama",question:"Mengapa kerja sama penting dalam permainan bola besar? Berikan satu contoh.",expectedAnswer:"Kerja sama membantu tim mengatur serangan dan pertahanan. Contohnya mengoper bola kepada teman yang berada di posisi lebih baik.",answerIndicators:["Menjelaskan manfaat kerja sama untuk permainan tim","Memberikan satu contoh, seperti mengoper atau saling membantu"],explanation:"Permainan bola besar dimainkan bersama. Komunikasi dan kerja sama membantu tim membuat keputusan dan bermain lebih aman."},
+{id:7,ballNumber:7,type:"mc",topic:"Bola voli",learningIndicator:"Memahami cara memulai permainan bola voli",question:"Pukulan untuk memulai satu reli dalam permainan bola voli disebut ...",options:["Servis","Dribbling","Tendangan sudut","Lay-up"],correctAnswer:0,explanation:"Servis adalah pukulan awal yang mengirim bola melewati net ke area lawan untuk memulai reli.",answerIndicators:["Mengenali servis sebagai pukulan awal"],teacherRubric:"100 jika menjawab servis; 50 jika menjelaskan sebagai pukulan awal tanpa istilah; 0 jika salah."},
+{id:8,ballNumber:8,type:"mc",topic:"Keselamatan",learningIndicator:"Memilih tindakan aman sebelum olahraga",question:"Apa yang sebaiknya dilakukan sebelum bermain sepak bola, bola voli, atau bola basket?",options:["Langsung bermain dengan kecepatan penuh","Melakukan pemanasan dan memastikan area aman","Mendorong teman agar siap","Memakai sepatu yang tidak sesuai"],correctAnswer:1,explanation:"Pemanasan mempersiapkan tubuh untuk bergerak. Memeriksa area dan perlengkapan juga membantu mengurangi risiko cedera.",answerIndicators:["Menyebut pemanasan dan/atau memeriksa keamanan area/perlengkapan"],teacherRubric:"100 jika menyebut pemanasan dan keamanan; 50 jika hanya salah satunya; 0 jika tidak sesuai."},
+{id:9,ballNumber:9,type:"oral",topic:"Bola basket",learningIndicator:"Menjelaskan operan kepada teman",question:"Dalam permainan bola basket, kapan sebaiknya kamu mengoper bola kepada teman daripada terus menggiringnya?",expectedAnswer:"Saat teman berada pada posisi lebih bebas atau lebih dekat ke sasaran, atau saat jalur menggiring tertutup lawan.",answerIndicators:["Menyebut teman berada pada posisi lebih baik/bebas","Menjelaskan keputusan untuk membantu peluang tim atau menghindari lawan"],explanation:"Mengoper pada waktu yang tepat membuat permainan lebih efektif dan membantu tim menciptakan peluang mencetak angka."},
+{id:10,ballNumber:10,type:"mc",topic:"Bola basket",learningIndicator:"Mengenali cara mencetak angka",question:"Dalam permainan bola basket, tim berusaha mencetak angka dengan cara ...",options:["Menendang bola ke gawang","Memukul bola melewati net","Memasukkan bola ke keranjang lawan","Melempar bola keluar lapangan"],correctAnswer:2,explanation:"Pemain basket berusaha memasukkan bola ke keranjang lawan sambil menaati aturan permainan.",answerIndicators:["Menyebut memasukkan bola ke keranjang lawan"],teacherRubric:"100 jika benar; 50 jika menyebut memasukkan bola tetapi tidak jelas; 0 jika salah."},
+{id:11,ballNumber:11,type:"mc",topic:"Sepak bola",learningIndicator:"Memahami aturan dasar memainkan bola",question:"Dalam permainan sepak bola, pemain lapangan umumnya tidak boleh sengaja memainkan bola dengan ...",options:["Kaki","Kepala","Dada","Tangan atau lengan"],correctAnswer:3,explanation:"Pemain lapangan umumnya tidak boleh sengaja menyentuh bola dengan tangan atau lengan. Penjaga gawang memiliki ketentuan khusus di area penaltinya sendiri.",answerIndicators:["Menyebut tangan/lengan dengan memahami adanya pengecualian penjaga gawang"],teacherRubric:"100 jika memilih tangan/lengan; 50 jika benar tetapi tidak memahami pengecualian; 0 jika salah."},
+{id:12,ballNumber:12,type:"oral",topic:"Bola voli",learningIndicator:"Menjelaskan kerja sama saat menerima bola",question:"Bola datang ke area timmu dalam permainan bola voli. Bagaimana kamu dan teman-teman bekerja sama agar bola dapat dikembalikan melewati net?",expectedAnswer:"Pemain berkomunikasi, pemain yang paling siap menerima bola mengoperkannya dengan passing, lalu teman lain menyiapkan umpan atau serangan sesuai kemampuan dan aturan sentuhan.",answerIndicators:["Menyebut komunikasi atau panggilan antarpemain","Menjelaskan penerimaan bola dan kerja sama mengarahkannya melewati net"],explanation:"Komunikasi membantu pemain menghindari tabrakan dan mengatur sentuhan agar bola dapat dikembalikan secara terencana."},
+{id:13,ballNumber:13,type:"mc",topic:"Permainan bola besar",learningIndicator:"Mengelompokkan olahraga bola besar",question:"Manakah kelompok olahraga yang semuanya termasuk permainan bola besar?",options:["Sepak bola, bola basket, dan bola voli","Bulu tangkis, tenis meja, dan catur","Lari cepat, lompat jauh, dan renang","Senam lantai, catur, dan bulu tangkis"],correctAnswer:0,explanation:"Sepak bola, bola basket, dan bola voli menggunakan bola berukuran relatif besar dan dimainkan dengan keterampilan serta aturan tim.",answerIndicators:["Memilih sepak bola, bola basket, dan bola voli"],teacherRubric:"100 jika memilih kelompok yang tepat; 50 jika hanya mengenali dua olahraga; 0 jika salah."},
+{id:14,ballNumber:14,type:"mc",topic:"Bola voli",learningIndicator:"Memahami aturan melewati net",question:"Saat bermain bola voli, bola yang dikirim timmu agar permainan berlanjut harus ...",options:["Dilempar ke penonton","Dikirim melewati net ke area permainan lawan","Dibawa berlari mengitari lapangan","Disembunyikan dari lawan"],correctAnswer:1,explanation:"Dalam bola voli, pemain memukul bola melewati net ke area lawan dan berusaha membuat bola jatuh di area yang sah atau menyulitkan lawan mengembalikannya.",answerIndicators:["Menyebut bola dikirim melewati net ke area lawan"],teacherRubric:"100 jika benar; 50 jika menyebut ke arah lawan tetapi tidak menyebut net; 0 jika salah."},
+{id:15,ballNumber:15,type:"oral",topic:"Fair play",learningIndicator:"Menentukan respons terhadap pelanggaran",question:"Jika kamu tidak sengaja melakukan pelanggaran saat bermain, apa yang sebaiknya kamu lakukan? Jelaskan alasannya.",expectedAnswer:"Mengakui kesalahan, mengikuti keputusan wasit atau guru, meminta maaf bila perlu, lalu melanjutkan permainan dengan tertib karena kejujuran dan keselamatan penting.",answerIndicators:["Menyebut mengakui atau menerima keputusan","Menjelaskan kejujuran, menghormati aturan, atau menjaga keselamatan"],explanation:"Fair play berarti bermain jujur, menghormati aturan, dan menghargai semua orang yang terlibat."},
+{id:16,ballNumber:16,type:"mc",topic:"Bola basket",learningIndicator:"Mengenali operan dada",question:"Operan bola basket yang dilakukan dari depan dada dengan mendorong bola ke arah teman disebut ...",options:["Servis bawah","Sundulan","Chest pass atau operan dada","Tendangan bebas"],correctAnswer:2,explanation:"Chest pass dilakukan dengan mendorong bola dari depan dada menuju teman, biasanya untuk operan yang cepat dan terarah.",answerIndicators:["Mengenali chest pass/operan dada"],teacherRubric:"100 jika benar; 50 jika menjelaskan operan dari dada tanpa istilah; 0 jika salah."},
+{id:17,ballNumber:17,type:"mc",topic:"Keselamatan dan aturan",learningIndicator:"Menunjukkan perilaku aman saat bertanding",question:"Seorang teman terjatuh dan tampak kesakitan saat bermain. Apa tindakan terbaik?",options:["Terus bermain dan mengabaikannya","Menertawakan teman","Memindahkannya dengan kasar agar cepat bangun","Menghentikan permainan, memberi tahu guru, dan membantu dengan aman"],correctAnswer:3,explanation:"Keselamatan harus diutamakan. Hentikan permainan dan panggil guru atau orang dewasa untuk membantu teman dengan tepat.",answerIndicators:["Menyebut menghentikan permainan dan memanggil guru/membantu dengan aman"],teacherRubric:"100 jika memilih tindakan aman yang lengkap; 50 jika hanya menyebut membantu; 0 jika memilih tindakan berbahaya."},
+{id:18,ballNumber:18,type:"oral",topic:"Strategi sederhana",learningIndicator:"Menerapkan keputusan sederhana dalam permainan",question:"Saat timmu menguasai bola tetapi lawan menjaga pemain yang membawa bola, tindakan apa yang dapat dilakukan agar tim tetap memiliki peluang menyerang?",expectedAnswer:"Pemain dapat mencari ruang kosong, bergerak tanpa bola, berkomunikasi, dan mengoper kepada teman yang berada di posisi lebih baik sambil mengikuti aturan permainan.",answerIndicators:["Menyebut mencari ruang atau bergerak ke posisi yang lebih baik","Menyebut komunikasi atau operan kepada teman"],explanation:"Bergerak mencari ruang dan mengoper dengan tepat membantu tim mempertahankan penguasaan bola dan menciptakan peluang."}
+];
+
+const arena = document.getElementById("arena");
+const overlay = document.getElementById("questionOverlay");
+let state = {};
+let positions = [];
+let velocities = [];
+let activeQuestion = null;
+let animationId = null;
+let lastFrame = 0;
+const colors = ["#2563eb","#7c3aed","#0891b2","#ea580c","#db2777","#0f766e"];
+const $ = id => document.getElementById(id);
+function freshState(){ state = {}; QUESTIONS.forEach(q => state[q.id] = {done:false,score:null,answer:null,note:""}); }
+function initBalls(){
+  arena.innerHTML = ""; positions=[]; velocities=[];
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  QUESTIONS.forEach((q,i)=>{
+    const b=document.createElement("button");
+    b.type="button"; b.className="ball"; b.textContent=q.ballNumber;
+    b.style.background=colors[i%colors.length];
+    b.setAttribute("aria-label",`Bola nomor ${q.ballNumber}, soal ${q.ballNumber}`);
+    b.addEventListener("click",()=>openQuestion(q.id));
+    arena.appendChild(b);
+    const maxX=Math.max(1,arena.clientWidth-54), maxY=Math.max(1,arena.clientHeight-54);
+    positions.push({x:10+Math.random()*Math.max(1,maxX-20),y:10+Math.random()*Math.max(1,maxY-20),el:b});
+    const speed=reduced?0:0.45+Math.random()*0.75;
+    velocities.push({x:(Math.random()>.5?1:-1)*speed,y:(Math.random()>.5?1:-1)*speed});
+  });
+  renderBalls();
+  if(animationId) cancelAnimationFrame(animationId);
+  lastFrame=0;
+  if(!reduced) animationId=requestAnimationFrame(animate);
+}
+function renderBalls(){
+  const w=arena.clientWidth,h=arena.clientHeight;
+  positions.forEach((p,i)=>{
+    const size=p.el.offsetWidth||54;
+    p.x=Math.max(0,Math.min(p.x,w-size));p.y=Math.max(0,Math.min(p.y,h-size));
+    p.el.style.left=p.x+"px";p.el.style.top=p.y+"px";
+    const done=state[QUESTIONS[i].id]?.done;
+    p.el.classList.toggle("done",!!done);p.el.disabled=!!done;
+    if(done){p.el.style.background="#15803d";p.el.setAttribute("aria-label",`Bola ${i+1}, selesai`)}
+    else {p.el.style.background=colors[i%colors.length];p.el.setAttribute("aria-label",`Bola ${i+1}, belum dijawab`)}
+  });
+}
+function animate(t){
+  if(!lastFrame)lastFrame=t;
+  const dt=Math.min(2,(t-lastFrame)/16.67);lastFrame=t;
+  const w=arena.clientWidth,h=arena.clientHeight;
+  positions.forEach((p,i)=>{
+    if(state[QUESTIONS[i].id]?.done)return;
+    const size=p.el.offsetWidth||54,v=velocities[i];
+    p.x+=v.x*dt;p.y+=v.y*dt;
+    if(p.x<=0){p.x=0;v.x=Math.abs(v.x)}
+    if(p.x>=w-size){p.x=w-size;v.x=-Math.abs(v.x)}
+    if(p.y<=0){p.y=0;v.y=Math.abs(v.y)}
+    if(p.y>=h-size){p.y=h-size;v.y=-Math.abs(v.y)}
+    p.el.style.left=p.x+"px";p.el.style.top=p.y+"px";
+  });
+  animationId=requestAnimationFrame(animate);
+}
+function updateStats(){
+  const entries=Object.values(state),done=entries.filter(s=>s.done).length,points=entries.reduce((n,s)=>n+(s.score||0),0),correct=entries.filter(s=>s.score===100).length;
+  $("progressText").textContent=`${done} / ${QUESTIONS.length}`;
+  $("correctText").textContent=correct;$("pointsText").textContent=points;
+  $("progressFill").style.width=(done/QUESTIONS.length*100)+"%";
+  renderBalls();
+  if(done===QUESTIONS.length)showResults();
+}
+function openQuestion(id){
+  const q=QUESTIONS.find(x=>x.id===id);
+  if(!q||state[id].done)return;
+  activeQuestion=q;
+  $("modalTitle").textContent=`Bola ${q.ballNumber} · Soal ${q.id}`;
+  $("typePill").textContent=q.type==="mc"?"MULTIPLE CHOICE":"ORAL ANSWER";
+  $("questionText").textContent=q.question;
+  $("feedback").className="feedback hidden";$("feedback").textContent="";
+  $("teacherReview").classList.add("hidden");$("finishQuestion").classList.add("hidden");
+  $("backToArena").classList.remove("hidden");
+  $("mcForm").classList.toggle("hidden",q.type!=="mc");
+  $("oralPanel").classList.toggle("hidden",q.type!=="oral");
+  $("markingPanel").classList.add("hidden");$("teacherNote").value="";
+  document.querySelectorAll("[data-score]").forEach(b=>b.disabled=false);
+  if(q.type==="mc"){
+    $("options").innerHTML="";
+    q.options.forEach((opt,i)=>{
+      const label=document.createElement("label");label.className="option";
+      const input=document.createElement("input");input.type="radio";input.name="answer";input.value=i;input.required=true;
+      const letter=document.createElement("b");letter.textContent=String.fromCharCode(65+i);
+      const span=document.createElement("span");span.textContent=opt;
+      label.append(input,letter,span);$("options").appendChild(label);
+    });
+    $("submitMC").disabled=false;
+  }else{
+    $("indicators").innerHTML="";q.answerIndicators.forEach(t=>{const li=document.createElement("li");li.textContent=t;$("indicators").appendChild(li)});
+    $("beginMarking").disabled=false;
+  }
+  overlay.classList.remove("hidden");document.body.style.overflow="hidden";
+  $("closeModal").focus();
+}
+function closeQuestion(){overlay.classList.add("hidden");document.body.style.overflow="";activeQuestion=null}
+function showFeedback(score,explanation){
+  const box=$("feedback");box.classList.remove("hidden","good","partial","bad");
+  box.classList.add(score===100?"good":score===50?"partial":"bad");
+  const title=score===100?"Hebat! Jawabanmu tepat.":score===50?"Bagus, kamu sudah memahami sebagian. Mari lengkapi lagi.":"Tidak apa-apa, terus belajar dan pahami pembahasannya.";
+  box.innerHTML="";
+  const strong=document.createElement("strong");strong.textContent=`${title} Skor: ${score} poin.`;
+  const p=document.createElement("p");p.textContent="Pembahasan: "+explanation;p.style.margin="8px 0 0";
+  box.append(strong,p);
+  $("finishQuestion").classList.remove("hidden");$("backToArena").classList.add("hidden");
+}
+function finishActive(score,answer){
+  if(!activeQuestion||state[activeQuestion.id].done)return;
+  const q=activeQuestion;state[q.id]={done:true,score,answer,note:$("teacherNote").value.trim()};
+  $("teacherReview").classList.remove("hidden");$("reviewIndicators").innerHTML="";
+  q.answerIndicators.forEach(t=>{const li=document.createElement("li");li.textContent=t;$("reviewIndicators").appendChild(li)});
+  showFeedback(score,q.explanation);updateStats();
+}
+$("mcForm").addEventListener("submit",e=>{
+  e.preventDefault();if(!activeQuestion||state[activeQuestion.id].done)return;
+  const selected=document.querySelector('input[name="answer"]:checked');
+  if(!selected){alert("Pilih salah satu jawaban terlebih dahulu.");return}
+  const q=activeQuestion,answer=Number(selected.value),score=answer===q.correctAnswer?100:0;
+  document.querySelectorAll('input[name="answer"]').forEach(x=>x.disabled=true);
+  $("submitMC").disabled=true;
+  const correctText=q.options[q.correctAnswer];
+  const explanation=q.explanation+` Jawaban yang tepat: ${String.fromCharCode(65+q.correctAnswer)}. ${correctText}.`;
+  finishActive(score,answer);
+});
+$("beginMarking").addEventListener("click",()=>{
+  if(!activeQuestion||state[activeQuestion.id].done)return;
+  $("markingPanel").classList.remove("hidden");
+  $("expectedAnswer").textContent=activeQuestion.expectedAnswer;
+  $("beginMarking").disabled=true;
+});
+document.querySelectorAll("[data-score]").forEach(btn=>btn.addEventListener("click",()=>{
+  if(!activeQuestion||state[activeQuestion.id].done)return;
+  finishActive(Number(btn.dataset.score),$("teacherNote").value.trim());
+  document.querySelectorAll("[data-score]").forEach(b=>b.disabled=true);
+}));
+$("finishQuestion").addEventListener("click",closeQuestion);
+$("backToArena").addEventListener("click",closeQuestion);
+$("closeModal").addEventListener("click",closeQuestion);
+overlay.addEventListener("click",e=>{if(e.target===overlay)closeQuestion()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!overlay.classList.contains("hidden"))closeQuestion()});
+function showResults(){
+  $("gameView").classList.add("hidden");$("resultsView").classList.remove("hidden");
+  const vals=Object.values(state),correct=vals.filter(s=>s.score===100).length,wrong=vals.filter(s=>s.score===0).length,partial=vals.filter(s=>s.score===50).length,points=vals.reduce((n,s)=>n+(s.score||0),0);
+  $("resTotal").textContent=QUESTIONS.length;$("resCorrect").textContent=correct;$("resWrong").textContent=wrong;$("resPartial").textContent=partial;$("resPoints").textContent=`${points} / 1800`;$("resPercent").textContent=(points/18).toFixed(1)+"%";
+  $("resultMessage").textContent=points>=1500?"Luar biasa! Terus pertahankan semangat belajar dan sportivitasmu.":points>=900?"Kerja bagus! Pelajari kembali pembahasan agar semakin percaya diri.":"Terima kasih sudah berusaha. Ayo pelajari pembahasan dan coba lagi!";
+}
+function restart(){
+  if(!confirm("Mulai sesi baru? Semua jawaban dan skor sesi ini akan direset."))return;
+  freshState();$("resultsView").classList.add("hidden");$("gameView").classList.remove("hidden");closeQuestion();
+  initBalls();updateStats();window.scrollTo({top:0,behavior:"smooth"});
+}
+$("restartTop").addEventListener("click",restart);$("playAgain").addEventListener("click",()=>{freshState();$("resultsView").classList.add("hidden");$("gameView").classList.remove("hidden");closeQuestion();initBalls();updateStats();window.scrollTo({top:0,behavior:"smooth"})});
+$("downloadResults").addEventListener("click",()=>{
+  const rows=[["Nomor Soal","Jenis","Topik","Pertanyaan","Skor","Status","Catatan Guru"]];
+  QUESTIONS.forEach(q=>{const s=state[q.id];rows.push([q.id,q.type==="mc"?"Multiple Choice":"Oral Answer",q.topic,q.question,s.score??"",s.done?"Selesai":"Belum dijawab",s.note||""])});
+  const csv=rows.map(row=>row.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(",")).join("\r\n");
+  const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download="hasil-bouncequiz-ai.csv";document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+});
+window.addEventListener("resize",()=>{if(positions.length){renderBalls()}});
+freshState();initBalls();updateStats();
+</script>
+</body>
+</html>
